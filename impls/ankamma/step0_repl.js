@@ -1,5 +1,5 @@
 // const {stdin, stdout} = require("process")
-// const readline = require('readline')
+const readline = require('readline')
 
 // const EVAL=(data)=>{
 //     return data;
