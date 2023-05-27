@@ -65,7 +65,7 @@ const read_atom = (reader) => {
   if (token == "true" || token == "false") {
     return new MalBool(token);
   }
-  
+
   if (token == "nil") {
     return new MalNil(token);
   }

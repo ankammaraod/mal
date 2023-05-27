@@ -1,5 +1,5 @@
 // const {stdin, stdout} = require("process")
-const readline = require('readline')
+const readline = require("readline");
 
 // const EVAL=(data)=>{
 //     return data;
@@ -28,22 +28,21 @@ const readline = require('readline')
 
 // main();
 
-
 const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const READ = (str) => str;
+const EVAL = (str) => str;
+const PRINT = (str) => str;
+
+const rep = (str) => PRINT(EVAL(READ(str)));
+
+const repl = () =>
+  rl.question("user> ", (line) => {
+    console.log(rep(line));
+    repl();
   });
-  
-  const READ = str => str;
-  const EVAL = str => str;
-  const PRINT = str => str;
-  
-  const rep = str => PRINT(EVAL(READ(str)));
-  
-  const repl = () =>
-    rl.question('user> ', line => {
-      console.log(rep(line));
-      repl();
-    });
-  
-  repl();
+
+repl();
