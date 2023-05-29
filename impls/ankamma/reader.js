@@ -1,11 +1,12 @@
 const {
   MalSymbol,
-  MalValue,
   MalList,
   MalVector,
   MalNil,
   MalBool,
+  MalMap,
 } = require("./types.js");
+
 
 class Reader {
   constructor(tokens) {
@@ -55,11 +56,16 @@ const read_vector = (reader) => {
   return new MalVector(ast);
 };
 
+const read_map = (reader) => {
+  const ast = read_seq(reader, "}");
+  return new MalMap(ast);
+};
+
 const read_atom = (reader) => {
   const token = reader.next();
 
   if (token.match(/^-?[0-9]+$/)) {
-    return new MalValue(parseInt(token));
+    return parseInt(token);
   }
 
   if (token == "true" || token == "false") {
@@ -79,6 +85,8 @@ const read_form = (reader) => {
       return read_list(reader);
     case "[":
       return read_vector(reader);
+    case "{":
+      return read_map(reader);
     default:
       return read_atom(reader);
   }

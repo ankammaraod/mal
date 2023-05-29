@@ -1,42 +1,38 @@
-class MalValue {
+const { pr_str } = require("./printer.js");
+
+class MalSymbol {
+  constructor(value) {
+    this.value = value;
+  }
+}
+
+class MalList {
   constructor(value) {
     this.value = value;
   }
 
   pr_str() {
-    return this.value.toString();
+    return "(" + this.value.map((x) => pr_str(x)).join(" ") + ")";
+  }
+
+  isEmpty() {
+    return this.value.length == 0;
   }
 }
 
-class MalSymbol extends MalValue {
+class MalVector {
   constructor(value) {
-    super(value);
-  }
-}
-
-class MalList extends MalValue {
-  constructor(value) {
-    super(value);
+    this.value = value;
   }
 
   pr_str() {
-    return "(" + this.value.map((x) => x.pr_str()).join(" ") + ")";
+    return "[" + this.value.map((x) => pr_str(x)).join(" ") + "]";
   }
 }
 
-class MalVector extends MalValue {
+class MalNil {
   constructor(value) {
-    super(value);
-  }
-
-  pr_str() {
-    return "[" + this.value.map((x) => x.pr_str()).join(" ") + "]";
-  }
-}
-
-class MalNil extends MalValue {
-  constructor(value) {
-    super(null);
+    this.value = null;
   }
 
   pr_str() {
@@ -44,10 +40,27 @@ class MalNil extends MalValue {
   }
 }
 
-class MalBool extends MalValue {
+class MalBool {
   constructor(value) {
-    super(value);
+    this.value = value;
   }
 }
 
-module.exports = { MalSymbol, MalValue, MalList, MalVector, MalNil, MalBool };
+class MalMap {
+  constructor(value) {
+    this.value = value;
+  }
+
+  pr_str() {
+    return "{" + this.value.map((x) => pr_str(x)).join(" ") + "}";
+  }
+}
+
+module.exports = {
+  MalSymbol,
+  MalList,
+  MalVector,
+  MalNil,
+  MalBool,
+  MalMap,
+};
