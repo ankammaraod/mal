@@ -1,19 +1,13 @@
 const readline = require("readline");
 const { read_str } = require("./reader");
 const { pr_str } = require("./printer.js");
-const { MalSymbol, MalList, MalValue, MalVector } = require("./types");
+const { MalSymbol, MalList, MalValue, MalVector, MalNil } = require("./types");
 const { Env } = require("./env.js");
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-const _env = {
-  "+": (...args) => args.reduce((a, b) => a + b),
-  "-": (...args) => args.reduce((a, b) => a - b),
-  "*": (...args) => args.reduce((a, b) => a * b),
-  "/": (...args) => args.reduce((a, b) => a / b),
-};
 
 const eval_ast = (ast, env) => {
   if (ast instanceof MalSymbol) {
@@ -35,6 +29,19 @@ const eval_ast = (ast, env) => {
 
 const READ = (str) => read_str(str);
 
+const let_env = (ast, outerEnv) => {
+  const newEnv = new Env(outerEnv);
+  bindings = ast.value[1].value;
+
+  for (let i = 0; i < bindings.length; i += 2) {
+    newEnv.set(bindings[i], EVAL(bindings[i + 1], newEnv));
+  }
+  if (ast.value[2]) {
+    return EVAL(ast.value[2], newEnv);
+  }
+  return new MalNil();
+};
+
 const EVAL = (ast, env) => {
   if (!(ast instanceof MalList)) {
     return eval_ast(ast, env);
@@ -48,6 +55,8 @@ const EVAL = (ast, env) => {
     case "def!":
       env.set(ast.value[1], EVAL(ast.value[2], env));
       return env.get(ast.value[1]);
+    case "let*":
+      return let_env(ast, env);
   }
 
   const [fn, ...args] = eval_ast(ast, env).value;

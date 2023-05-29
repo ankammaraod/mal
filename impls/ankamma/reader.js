@@ -5,8 +5,8 @@ const {
   MalNil,
   MalBool,
   MalMap,
+  MalKeyWord,
 } = require("./types.js");
-
 
 class Reader {
   constructor(tokens) {
@@ -56,6 +56,11 @@ const read_vector = (reader) => {
   return new MalVector(ast);
 };
 
+const read_keyword = (reader) => {
+  const ast = reader.next();
+  return new MalKeyWord(ast);
+};
+
 const read_map = (reader) => {
   const ast = read_seq(reader, "}");
   return new MalMap(ast);
@@ -67,7 +72,9 @@ const read_atom = (reader) => {
   if (token.match(/^-?[0-9]+$/)) {
     return parseInt(token);
   }
-
+  if (token.match(/^:/)) {
+    return new MalKeyWord(token);
+  }
   if (token == "true" || token == "false") {
     return new MalBool(token);
   }

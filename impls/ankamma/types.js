@@ -56,6 +56,16 @@ class MalMap {
   }
 }
 
+class MalKeyWord {
+  constructor(value) {
+    this.value = value;
+  }
+
+  pr_str() {
+    return this.value;
+  }
+}
+
 module.exports = {
   MalSymbol,
   MalList,
@@ -63,4 +73,5 @@ module.exports = {
   MalNil,
   MalBool,
   MalMap,
+  MalKeyWord,
 };
