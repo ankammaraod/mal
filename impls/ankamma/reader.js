@@ -6,6 +6,7 @@ const {
   MalBool,
   MalMap,
   MalKeyWord,
+  MalString,
 } = require("./types.js");
 
 class Reader {
@@ -56,7 +57,6 @@ const read_vector = (reader) => {
   return new MalVector(ast);
 };
 
-
 const read_map = (reader) => {
   const ast = read_seq(reader, "}");
   return new MalMap(ast);
@@ -71,10 +71,12 @@ const read_atom = (reader) => {
   if (token.match(/^:/)) {
     return new MalKeyWord(token);
   }
+  if (token.match(/^"|'/)) {
+    return new MalString(token);
+  }
   if (token == "true" || token == "false") {
     return new MalBool(token);
   }
-
   if (token == "nil") {
     return new MalNil(token);
   }
