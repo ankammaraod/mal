@@ -1,13 +1,19 @@
 const readline = require("readline");
 const { read_str } = require("./reader");
 const { pr_str } = require("./printer.js");
-const { MalSymbol, MalList, MalValue, MalVector, MalNil } = require("./types");
+const {
+  MalSymbol,
+  MalList,
+  MalValue,
+  MalVector,
+  MalNil,
+  MalMap,
+} = require("./types");
 const { Env } = require("./env.js");
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
-
 
 const eval_ast = (ast, env) => {
   if (ast instanceof MalSymbol) {
@@ -22,6 +28,11 @@ const eval_ast = (ast, env) => {
   if (ast instanceof MalVector) {
     const newAst = ast.value.map((x) => EVAL(x, env));
     return new MalVector(newAst);
+  }
+
+  if (ast instanceof MalMap) {
+    const newASt = ast.value.map((x) => EVAL(x, env));
+    return new MalMap(newASt);
   }
 
   return ast;

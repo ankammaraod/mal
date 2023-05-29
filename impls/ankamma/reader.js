@@ -56,10 +56,6 @@ const read_vector = (reader) => {
   return new MalVector(ast);
 };
 
-const read_keyword = (reader) => {
-  const ast = reader.next();
-  return new MalKeyWord(ast);
-};
 
 const read_map = (reader) => {
   const ast = read_seq(reader, "}");

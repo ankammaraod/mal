@@ -52,7 +52,17 @@ class MalMap {
   }
 
   pr_str() {
-    return "{" + this.value.map((x) => pr_str(x)).join(" ") + "}";
+    return (
+      "{" +
+      this.value
+        .map((x, i) => {
+          if (i % 2 != 0) return x + ",";
+          return x.value;
+        })
+        .join(" ")
+        .slice(0, -1) +
+      "}"
+    );
   }
 }
 
