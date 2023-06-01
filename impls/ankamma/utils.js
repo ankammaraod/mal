@@ -1,3 +1,5 @@
+const { MalValue } = require("./types.js");
+
 const areArraysEqual = function (array1, array2) {
   if (array1.length !== array2.length) {
     return false;
@@ -11,9 +13,15 @@ const areArraysEqual = function (array1, array2) {
 };
 
 const areEqual = function (element1, element2) {
+  console.log(element1, element2);
+
+  if (typeof element1 == "number" && typeof element2 == "number") {
+    return element1 === element2;
+  }
   if (Array.isArray(element1.value) && Array.isArray(element2.value)) {
     return areArraysEqual(element1.value, element2.value);
   }
+
   return element1.value === element2.value;
 };
 

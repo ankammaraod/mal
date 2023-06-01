@@ -51,14 +51,18 @@ const let_env = (ast, outerEnv) => {
   return ast.value[2] ? EVAL(ast.value[2], newEnv) : new MalNil();
 };
 
-const isTrue = (if_result) => {
-  return ((if_result.value == "false" || if_result.value == null) && if_result != 0) || if_result.value == false;
+const isFalse = (if_result) => {
+  return if_result.value == "false" ||
+    if_result instanceof MalNil ||
+    if_result.value == "undefined"
+    ? true
+    : false;
 };
 
 const handle_if = (ast, env) => {
   const if_result = EVAL(ast.value[1], env);
 
-  if (isTrue(if_result)) {
+  if (isFalse(if_result)) {
     return ast.value[3] != undefined ? EVAL(ast.value[3], env) : new MalNil();
   }
   return ast.value[2] != undefined ? EVAL(ast.value[2], env) : new MalNil();

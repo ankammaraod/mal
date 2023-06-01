@@ -1,28 +1,38 @@
 const { pr_str } = require("./printer.js");
 
-class MalSymbol {
-  constructor(value) {
-    this.value = value;
-  }
-}
-
-class MalList {
+class MalValue {
   constructor(value) {
     this.value = value;
   }
 
   pr_str() {
+    return this.value.toString();
+  }
+}
+
+class MalSymbol extends MalValue {
+  constructor(value) {
+    super(value);
+  }
+}
+
+class MalList extends MalValue {
+  constructor(value) {
+    super(value);
+  }
+
+  pr_str() {
     return "(" + this.value.map((x) => pr_str(x)).join(" ") + ")";
   }
-  
+
   isEmpty() {
     return this.value.length == 0;
   }
 }
 
-class MalVector {
+class MalVector extends MalValue {
   constructor(value) {
-    this.value = value;
+    super(value);
   }
 
   pr_str() {
@@ -30,9 +40,9 @@ class MalVector {
   }
 }
 
-class MalNil {
+class MalNil extends MalValue {
   constructor(value) {
-    this.value = null;
+    super(value);
   }
 
   pr_str() {
@@ -40,18 +50,18 @@ class MalNil {
   }
 }
 
-class MalBool {
+class MalBool extends MalValue {
   constructor(value) {
-    this.value = value;
+    super(value);
   }
   pr_str() {
     return this.value;
   }
 }
 
-class MalMap {
+class MalMap extends MalValue {
   constructor(value) {
-    this.value = value;
+    super(value);
   }
 
   pr_str() {
@@ -69,9 +79,9 @@ class MalMap {
   }
 }
 
-class MalKeyWord {
+class MalKeyWord extends MalValue {
   constructor(value) {
-    this.value = value;
+    super(value);
   }
 
   pr_str() {
@@ -79,9 +89,9 @@ class MalKeyWord {
   }
 }
 
-class MalString {
+class MalString extends MalValue {
   constructor(value) {
-    this.value = value;
+    super(value);
   }
   pr_str() {
     return this.value;

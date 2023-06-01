@@ -59,7 +59,7 @@ core = {
   list: (...args) => new MalList(args),
 
   count: (arg) => {
-    return arg.value ? arg.value.length : 0;
+    return arg instanceof MalNil ? 0 : arg.value.length;
   },
 
   prn: (...args) => {
@@ -84,8 +84,8 @@ core = {
       return new MalBool(false);
     }
     return !arg.value || arg.value == "false"
-      ? new MalBool("true")
-      : new MalBool("false");
+      ? new MalBool(true)
+      : new MalBool(false);
   },
 
   sumdown: (limit) => {
