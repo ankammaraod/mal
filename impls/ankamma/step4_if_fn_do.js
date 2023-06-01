@@ -10,6 +10,8 @@ const {
   MalMap,
 } = require("./types");
 const { Env } = require("./env.js");
+const { core } = require("./core.js");
+
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -43,26 +45,42 @@ const READ = (str) => read_str(str);
 const let_env = (ast, outerEnv) => {
   const newEnv = new Env(outerEnv);
   bindings = ast.value[1].value;
-
   for (let i = 0; i < bindings.length; i += 2) {
     newEnv.set(bindings[i], EVAL(bindings[i + 1], newEnv));
   }
   return ast.value[2] ? EVAL(ast.value[2], newEnv) : new MalNil();
 };
 
-const if_fun = (ast, env) => {
-  const if_result = EVAL(ast.value[1], env);
-  if (if_result.value == "false" || if_result.value == "nil") {
-    return ast.value[3] != "undefined" ? EVAL(ast.value[3], env) : null;
-  }
-  return ast.value[2] != "undefined" ? EVAL(ast.value[2], env) : null;
+const isTrue = (if_result) => {
+  return ((if_result.value == "false" || if_result.value == null) && if_result != 0) || if_result.value == false;
 };
 
-const do_fun = (ast, env) => {
+const handle_if = (ast, env) => {
+  const if_result = EVAL(ast.value[1], env);
+
+  if (isTrue(if_result)) {
+    return ast.value[3] != undefined ? EVAL(ast.value[3], env) : new MalNil();
+  }
+  return ast.value[2] != undefined ? EVAL(ast.value[2], env) : new MalNil();
+};
+
+const handle_do = (ast, env) => {
   for (let i = 1; i < ast.value.length; i++) {
     result = EVAL(ast.value[i], env);
   }
   return result;
+};
+
+const handle_function = (ast, env) => {
+  return (...args) => {
+    const local_scope = new Env(env);
+    const vars = ast.value[1].value;
+
+    for (let i = 0; i < vars.length; i++) {
+      local_scope.set(vars[i], args[i]);
+    }
+    return EVAL(ast.value[2], local_scope);
+  };
 };
 
 const EVAL = (ast, env) => {
@@ -80,9 +98,11 @@ const EVAL = (ast, env) => {
     case "let*":
       return let_env(ast, env);
     case "if":
-      return if_fun(ast, env);
+      return handle_if(ast, env);
     case "do":
-      return do_fun(ast, env);
+      return handle_do(ast, env);
+    case "fn*":
+      return handle_function(ast, env);
   }
 
   const [fn, ...args] = eval_ast(ast, env).value;
@@ -92,13 +112,8 @@ const EVAL = (ast, env) => {
 const PRINT = (malValue) => pr_str(malValue);
 
 const env = new Env();
-env.set(new MalSymbol("+"), (...args) => args.reduce((a, b) => a + b));
-env.set(new MalSymbol("-"), (...args) => args.reduce((a, b) => a - b));
-env.set(new MalSymbol("*"), (...args) => args.reduce((a, b) => a * b));
-env.set(new MalSymbol("/"), (...args) => args.reduce((a, b) => a / b));
-env.set(new MalSymbol("print"), (arg) => {
-  console.log(arg);
-  return new MalNil();
+Object.keys(core).forEach((key) => {
+  env.set(new MalSymbol(key), core[key]);
 });
 
 const rep = (str) => PRINT(EVAL(READ(str), env));

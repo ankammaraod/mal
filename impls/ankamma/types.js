@@ -14,7 +14,7 @@ class MalList {
   pr_str() {
     return "(" + this.value.map((x) => pr_str(x)).join(" ") + ")";
   }
-
+  
   isEmpty() {
     return this.value.length == 0;
   }
@@ -43,6 +43,9 @@ class MalNil {
 class MalBool {
   constructor(value) {
     this.value = value;
+  }
+  pr_str() {
+    return this.value;
   }
 }
 
