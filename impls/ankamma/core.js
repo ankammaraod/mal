@@ -83,7 +83,7 @@ core = {
     if (arg == 0) {
       return new MalBool(false);
     }
-    return !arg.value || arg.value == "false"
+    return !arg.value || arg.value == "false" || arg.value == "nil"
       ? new MalBool(true)
       : new MalBool(false);
   },

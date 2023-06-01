@@ -8,6 +8,7 @@ const {
   MalVector,
   MalNil,
   MalMap,
+  MalBool,
 } = require("./types");
 const { Env } = require("./env.js");
 const { core } = require("./core.js");
@@ -52,7 +53,11 @@ const let_env = (ast, outerEnv) => {
 };
 
 const isFalse = (if_result) => {
-  return if_result.value == "false" ||
+  if (if_result instanceof MalList || if_result instanceof MalVector) {
+    return false;
+  }
+  return if_result.value == false ||
+    if_result.value == "false" ||
     if_result instanceof MalNil ||
     if_result.value == "undefined"
     ? true
@@ -61,7 +66,7 @@ const isFalse = (if_result) => {
 
 const handle_if = (ast, env) => {
   const if_result = EVAL(ast.value[1], env);
-
+  console.log(if_result);
   if (isFalse(if_result)) {
     return ast.value[3] != undefined ? EVAL(ast.value[3], env) : new MalNil();
   }
@@ -81,8 +86,14 @@ const handle_function = (ast, env) => {
     const vars = ast.value[1].value;
 
     for (let i = 0; i < vars.length; i++) {
-      local_scope.set(vars[i], args[i]);
+      if (vars[i].value == "&") {
+        i++;
+        local_scope.set(vars[i], new MalList(args.slice(i - 1)));
+      } else {
+        local_scope.set(vars[i], args[i]);
+      }
     }
+
     return EVAL(ast.value[2], local_scope);
   };
 };

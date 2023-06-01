@@ -5,7 +5,7 @@ const areArraysEqual = function (array1, array2) {
     return false;
   }
   for (let index = 0; index < array1.length; index++) {
-    if (!areEqual(array1[index].value, array2[index].value)) {
+    if (!areEqual(array1[index], array2[index])) {
       return false;
     }
   }
