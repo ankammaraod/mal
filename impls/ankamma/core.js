@@ -70,7 +70,10 @@ core = {
   },
 
   "pr-str": (...args) => {
-    const results = args.map((value) => pr_str(value));
+    const results = args.map((value) => {
+      console.log(value);
+      return pr_str(value.replaceAll('"', '\\"'));
+    });
     return new MalString(results.join(" "));
   },
 
@@ -97,6 +100,6 @@ core = {
   },
 };
 
-//str pr-str println prn  function params with &
+//str pr-str println
 
 module.exports = { core };
