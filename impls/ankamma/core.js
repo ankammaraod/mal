@@ -71,7 +71,6 @@ core = {
 
   "pr-str": (...args) => {
     const results = args.map((value) => {
-      console.log(value);
       return pr_str(value.replaceAll('"', '\\"'));
     });
     return new MalString(results.join(" "));

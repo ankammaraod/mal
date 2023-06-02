@@ -97,6 +97,18 @@ class MalString extends MalValue {
     return this.value;
   }
 }
+
+class MalFunction extends MalValue {
+  constructor(fnbody, binds, env) {
+    super(fnbody);
+    this.binds = binds;
+    this.oldEnv = env;
+  }
+
+  pr_str() {
+    return "#<function>";
+  }
+}
 module.exports = {
   MalSymbol,
   MalList,
@@ -106,4 +118,5 @@ module.exports = {
   MalMap,
   MalKeyWord,
   MalString,
+  MalFunction,
 };

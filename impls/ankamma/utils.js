@@ -13,7 +13,6 @@ const areArraysEqual = function (array1, array2) {
 };
 
 const areEqual = function (element1, element2) {
-  console.log(element1, element2);
 
   if (typeof element1 == "number" && typeof element2 == "number") {
     return element1 === element2;
