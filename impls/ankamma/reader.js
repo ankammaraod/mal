@@ -30,8 +30,10 @@ class Reader {
 const tokenize = (str) => {
   re = /[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)/g;
 
-  return [...str.matchAll(re)].map((x) => x[1]).slice(0, -1);
-  // .filter((x) => !x.startsWith(";"));
+  return [...str.matchAll(re)]
+    .map((x) => x[1])
+    .slice(0, -1)
+    .filter((x) => !x.startsWith(";"));
 };
 
 const read_seq = (reader, closing) => {
