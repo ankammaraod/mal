@@ -7,6 +7,7 @@ const {
   MalMap,
   MalKeyWord,
   MalString,
+  createMalString,
 } = require("./types.js");
 
 class Reader {
@@ -30,6 +31,7 @@ const tokenize = (str) => {
   re = /[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)/g;
 
   return [...str.matchAll(re)].map((x) => x[1]).slice(0, -1);
+  // .filter((x) => !x.startsWith(";"));
 };
 
 const read_seq = (reader, closing) => {
@@ -62,36 +64,51 @@ const read_map = (reader) => {
   return new MalMap(ast);
 };
 
+const prependSymbol = (reader, symbolStr) => {
+  reader.next();
+  const newAst = read_form(reader);
+  const symbol = new MalSymbol(symbolStr);
+  return new MalList([symbol, newAst]);
+};
+
 const read_atom = (reader) => {
   const token = reader.next();
 
-  if (token.match(/^-?[0-9]+$/)) {
-    return parseInt(token);
-  }
-  if (token.match(/^:/)) {
-    return new MalKeyWord(token);
-  }
-  if (token.match(/^"|'/)) {
-    return new MalString(token);
-  }
-  if (token == "true" || token == "false") {
-    return new MalBool(token);
-  }
-  if (token == "nil") {
-    return new MalNil(token);
-  }
+  if (token.match(/^-?[0-9]+$/)) return parseInt(token);
+
+  if (token.match(/^:/)) return new MalKeyWord(token);
+
+  if (token.startsWith('"')) return createMalString(token.slice(1, -1));
+
+  if (token == "true" || token == "false") return new MalBool(token);
+
+  if (token == "nil") return new MalNil(token);
+
   return new MalSymbol(token);
 };
 
 const read_form = (reader) => {
   const token = reader.peek();
-  switch (token[0]) {
+  switch (token) {
     case "(":
       return read_list(reader);
     case "[":
       return read_vector(reader);
     case "{":
       return read_map(reader);
+    case ";":
+      reader.next();
+      return new MalNil();
+    case "@":
+      return prependSymbol(reader, "deref");
+    case "'":
+      return prependSymbol(reader, "quote");
+    case "`":
+      return prependSymbol(reader, "quasiquote");
+    case "~":
+      return prependSymbol(reader, "unquote");
+    case "~@":
+      return prependSymbol(reader, "splice-unquote");
     default:
       return read_atom(reader);
   }

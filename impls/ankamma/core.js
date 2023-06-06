@@ -1,6 +1,17 @@
-const { MalNil, MalList, MalBool, MalString } = require("./types");
+const {
+  MalNil,
+  MalList,
+  MalBool,
+  MalString,
+  MalAtom,
+  MalVector,
+  MalValue,
+  isEqual,
+} = require("./types");
 const { pr_str } = require("./printer.js");
 const { areEqual } = require("./utils.js");
+const { read_str } = require("./reader.js");
+const fs = require("fs");
 
 core = {
   "+": (...args) => args.reduce((a, b) => a + b),
@@ -54,7 +65,7 @@ core = {
     return new MalBool(true);
   },
 
-  "=": (arg1, arg2) => new MalBool(areEqual(arg1, arg2)),
+  "=": (arg1, arg2) => new MalBool(isEqual(arg1, arg2)),
 
   list: (...args) => new MalList(args),
 
@@ -70,35 +81,34 @@ core = {
   },
 
   "pr-str": (...args) => {
-    const results = args.map((value) => {
-      return pr_str(value.replaceAll('"', '\\"'));
-    });
-    return new MalString(results.join(" "));
+    return pr_str(
+      new MalString(args.map((x) => pr_str(x, true)).join(" ")),
+      true
+    );
   },
 
   str: (...args) => {
-    const results = args.map((value) => pr_str(value));
-    return new MalString(results.join(""));
+    return new MalString(args.map((x) => pr_str(x, false)).join(""));
   },
 
-  not: (arg) => {
-    if (arg == 0) {
-      return new MalBool(false);
-    }
-    return !arg.value || arg.value == "false" || arg.value == "nil"
-      ? new MalBool(true)
-      : new MalBool(false);
+  println: (...args) => {
+    const result = args.map((x) => pr_str(x, false)).join(" ");
+    console.log(result);
+    return Nil;
   },
 
-  sumdown: (limit) => {
-    let sum = 0;
-    for (let i = 1; i <= limit; i++) {
-      sum += i;
-    }
-    return sum;
+  "read-string": (string) => read_str(string.value),
+  atom: (value) => new MalAtom(value),
+  "atom?": (value) => value instanceof MalAtom,
+  deref: (value) => value.deref(),
+  "swap!": (atom, f, ...args) => {
+    return atom.swap(f, args);
   },
+  "reset!": (atom, value) => atom.reset(value),
+  slurp: (filename) => new MalString(fs.readFileSync(filename.value, "utf-8")),
+  cons: (value, list) => new MalList([value, ...list.value]),
+  concat: (...lists) => new MalList(lists.flatMap((x) => x.value)),
+  vec: (list) => new MalVector(list.value),
 };
-
-//str pr-str println
 
 module.exports = { core };

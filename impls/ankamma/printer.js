@@ -1,8 +1,3 @@
-const pr_str = (value) => {
-  if (typeof value == "function") return "#<function>";
-  if (typeof value !== "number") return value.pr_str();
-
-  return value.toString();
-};
+const { pr_str } = require("./types");
 
 module.exports = { pr_str };
