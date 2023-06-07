@@ -1,9 +1,9 @@
 const { MalList } = require("./types.js");
 
 class Env {
-  #outer;
+
   constructor(outer, binds, expr) {
-    this.#outer = outer;
+    this.outer = outer;
     this.data = {};
     this.#setBinds(binds, expr);
   }
@@ -36,8 +36,8 @@ class Env {
       return this;
     }
 
-    if (this.#outer) {
-      return this.#outer.find(symbol);
+    if (this.outer != undefined) {
+      return this.outer.find(symbol);
     }
   }
 
